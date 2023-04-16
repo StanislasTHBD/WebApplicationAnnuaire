@@ -6,6 +6,39 @@
 
 <h1>Index</h1>
 
+<form method="get" action="@Url.Action("Index")">
+    <div class="row">
+       
+        <div class="col-sm-3 form-group">
+            <label for="siteSearch">Search by site:</label>
+            <select class="form-control" id="siteSearch" name="siteSearch">
+                <option value="">All sites</option>
+                @foreach (var site in ViewBag.Sites)
+                {
+                    <option value="@site.Id">@site.Ville</option>
+                }
+            </select>
+        </div>
+        <div class="col-sm-3 form-group">
+            <label for="serviceSearch">Search by service:</label>
+            <select class="form-control" id="serviceSearch" name="serviceSearch">
+                <option value="">All services</option>
+                @foreach (var service in ViewBag.Services)
+                {
+                    <option value="@service.Id">@service.Nom</option>
+                }
+            </select>
+        </div>
+        <div class="col-sm-4 form-group">
+            <label for="search">Search by name:</label>
+            <input type="text" class="form-control" id="search" name="search" placeholder="Enter name">
+        </div>
+        <div class="col-sm-2 form-group d-flex align-items-end">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </div>
+</form>
+
 <p>
     <a asp-action="Create">Create New</a>
 </p>

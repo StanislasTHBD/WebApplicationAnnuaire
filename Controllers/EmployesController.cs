@@ -20,11 +20,32 @@ namespace WebApplicationAnnuaire.Controllers
         }
 
         // GET: Employes
-        public async Task<IActionResult> Index()
+        public IActionResult Index(string search, int? siteSearch, int? serviceSearch)
         {
-            var applicationDbContext = _context.Employes.Include(e => e.Service).Include(e => e.Site);
-            return View(await applicationDbContext.ToListAsync());
+            var query = _context.Employes.Include(e => e.Service).Include(e => e.Site).AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                //query = query.Where(e => e.Nom.Contains(search) || e.Prenom.Contains(search) || e.Email.Contains(search));
+                query = query.Where(e => e.Nom.Contains(search));
+            }
+
+            if (siteSearch.HasValue)
+            {
+                query = query.Where(e => e.SiteId == siteSearch.Value);
+            }
+
+            if (serviceSearch.HasValue)
+            {
+                query = query.Where(e => e.ServiceId == serviceSearch.Value);
+            }
+
+            var employes = query.ToList();
+            ViewBag.Sites = _context.Site.ToList();
+            ViewBag.Services = _context.Service.ToList();
+            return View(employes);
         }
+
 
         // GET: Employes/Details/5
         public async Task<IActionResult> Details(int? id)
