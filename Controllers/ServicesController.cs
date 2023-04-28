@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using WebApplicationAnnuaire.Models;
 
 namespace WebApplicationAnnuaire.Controllers
 {
+    [Authorize(Roles = "Administration")]
     public class ServicesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -137,27 +140,52 @@ namespace WebApplicationAnnuaire.Controllers
         }
 
         // POST: Services/Delete/5
+        /*   [HttpPost, ActionName("Delete")]
+           [ValidateAntiForgeryToken]
+           public async Task<IActionResult> DeleteConfirmed(int? id)
+           {
+               if (_context.Service == null)
+               {
+                   return Problem("Entity set 'ApplicationDbContext.Service'  is null.");
+               }
+               var service = await _context.Service.FindAsync(id);
+               if (service != null)
+               {
+                   _context.Service.Remove(service);
+               }
+
+               await _context.SaveChangesAsync();
+               return RedirectToAction(nameof(Index));
+           }*/
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-            if (_context.Service == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.Service'  is null.");
+                if (_context.Service == null)
+                {
+                    return Problem("Entity set 'ApplicationDbContext.Service'  is null.");
+                }
+                var service = await _context.Service.FindAsync(id);
+                if (service != null)
+                {
+                    _context.Service.Remove(service);
+                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var service = await _context.Service.FindAsync(id);
-            if (service != null)
+            catch (Exception ex)
             {
-                _context.Service.Remove(service);
+                // Log the exception if necessary
+                return StatusCode(500);
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool ServiceExists(int? id)
         {
-          return (_context.Service?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Service?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

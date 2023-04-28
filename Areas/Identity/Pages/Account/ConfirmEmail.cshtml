@@ -1,0 +1,10 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirmation de l'email";
+}
+
+<h1>@ViewData["Title"]</h1>
+<partial name="_StatusMessage" model="Model.StatusMessage" />
+
+<a href="/Users" class="btn btn-success">Retourner vers la page Utilisateurs</a>

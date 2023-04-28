@@ -1,63 +1,67 @@
 ﻿@model WebApplicationAnnuaire.Models.Employe
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Supprimer";
 }
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Employe</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nom)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nom)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Prenom)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Prenom)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TelephoneFixe)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TelephoneFixe)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TelephonePortable)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TelephonePortable)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Service)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Service.Nom)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Site)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Site.Ville)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+<div class="container">
+    <h1 class="mb-4">Supprimer</h1>
+    <h3 class="mb-4">Êtes-vous sûr(e) de vouloir supprimer ceci ?</h3>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Employe
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Nom :</strong> @Html.DisplayFor(model => model.Nom)
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Prenom :</strong> @Html.DisplayFor(model => model.Prenom)
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Telephone Fixe :</strong> @Html.DisplayFor(model => model.TelephoneFixe)
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Telephone Portable :</strong> @Html.DisplayFor(model => model.TelephonePortable)
+                    </li>
+                    <li class="list-group-item">
+                        <strong>Email :</strong> @Html.DisplayFor(model => model.Email)
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Site
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Ville :</strong> @Html.DisplayFor(model => model.Site.Ville)
+                    </li>
+                </ul>
+            </div>
+            <div class="card mb-4">
+                <div class="card-header">
+                    Service
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <strong>Nom :</strong> @Html.DisplayFor(model => model.Service.Nom)
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger mr-2">Supprimer</button>
+                <a class="btn btn-secondary" asp-action="Index">Retour à la liste</a>
+            </form>
+        </div>
+    </div>
 </div>

@@ -4,11 +4,40 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<div class="row">
+    <div class="col-md-10">
+        <h1>Services</h1>
+    </div>
+    <div class="col-md-2 text-right">
+        @*@if (SignInManager.IsSignedIn(User) && User.IsInRole("Administration"))
+        {*@
+            <a class="btn btn-success" asp-action="Create">Créer un service</a>
+        @*}*@
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="card">
+    <div class="card-header">
+        Liste des services
+    </div>
+    <ul class="list-group list-group-flush">
+        @foreach (var item in Model)
+        {
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <div>@item.Nom</div>
+
+                    <div class="btn-group" role="group">
+                        <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Modifier</a>
+                        <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Supprimer</a>
+                    </div>
+                    
+                </div>
+            </li>
+        }
+    </ul>
+</div>
+@*
 <table class="table">
     <thead>
         <tr>
@@ -26,10 +55,10 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                @*<a asp-action="Details" asp-route-id="@item.Id">Details</a> |*@
+             @*   <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }
     </tbody>
-</table>
+</table>*@

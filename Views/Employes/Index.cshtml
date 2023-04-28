@@ -1,50 +1,93 @@
 ﻿@model IEnumerable<WebApplicationAnnuaire.Models.Employe>
-
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<form method="get" action="@Url.Action("Index")">
-    <div class="row">
-       
-        <div class="col-sm-3 form-group">
-            <label for="siteSearch">Search by site:</label>
-            <select class="form-control" id="siteSearch" name="siteSearch">
-                <option value="">All sites</option>
-                @foreach (var site in ViewBag.Sites)
-                {
-                    <option value="@site.Id">@site.Ville</option>
-                }
-            </select>
-        </div>
-        <div class="col-sm-3 form-group">
-            <label for="serviceSearch">Search by service:</label>
-            <select class="form-control" id="serviceSearch" name="serviceSearch">
-                <option value="">All services</option>
-                @foreach (var service in ViewBag.Services)
-                {
-                    <option value="@service.Id">@service.Nom</option>
-                }
-            </select>
-        </div>
-        <div class="col-sm-4 form-group">
-            <label for="search">Search by name:</label>
-            <input type="text" class="form-control" id="search" name="search" placeholder="Enter name">
-        </div>
-        <div class="col-sm-2 form-group d-flex align-items-end">
-            <button type="submit" class="btn btn-primary">Search</button>
-        </div>
+<div class="row">
+    <div class="col-md-10">
+        <h1>Employés</h1>
     </div>
-</form>
+    <div class="col-md-2 text-right">
+        @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administration"))
+        {
+            <a class="btn btn-success" asp-action="Create">Créer un employé</a>
+        }
+    </div>
+</div>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+<div class="card">
+    <div class="card-header">
+   Rechercher
+    </div>
+    <div class="card-body">
+        <form method="get" action="@Url.Action("Index")">
+            <div class="row">
+                <div class="col-sm-3 form-group">
+                    @*<label for="siteSearch">Recherche par site:</label>*@
+                    <select class="form-control" id="siteSearch" name="siteSearch">
+                        <option value="">Tous les sites</option>
+                        @foreach (var site in ViewBag.Sites)
+                        {
+                            var a = site;
+                            if (a.Id == ViewBag.SiteSearch)
+                            {
+                                <option value="@a.Id" selected>@a.Ville</option>
+                            } else {
+                                <option value="@a.Id">@a.Ville</option>
+                            }
+                            @* <option value="@site.Id">@site.Ville</option>*@
+                             
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-3 form-group">
+                    @*<label for="serviceSearch">Recherche par service:</label>*@
+                    <select class="form-control" id="serviceSearch" name="serviceSearch">
+                        <option value="">Toutes les services</option>
+                        @foreach (var service in ViewBag.Services)
+                        {
+                            var a = service;
+                            if (a.Id == ViewBag.ServiceSearch)
+                            {
+                                <option value="@a.Id" selected>@a.Nom</option>
+                            }
+                            else
+                            {
+                                <option value="@a.Id">@a.Nom</option>
+                            }
+                            @* <option value="@site.Id">@site.Ville</option>*@
+
+                        }
+                    </select>
+                </div>
+                <div class="col-sm-4 form-group">
+                    @*<label for="search">Recherche par nom:</label>*@
+                    <input type="text" class="form-control" id="search" name="search" placeholder="Entrez le nom" value="@ViewBag.Search">
+
+                 @*   <input type="text" class="form-control" id="search" name="search" placeholder="Entrez le nom">*@
+                </div>
+                <div class="col-sm-2 form-group d-flex align-items-end">
+                    <button type="submit" class="btn btn-light">Recherche</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<br/>
+
 <table class="table">
     <thead>
         <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Site)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Service)
+            </th>
             <th>
                 @Html.DisplayNameFor(model => model.Nom)
             </th>
@@ -60,18 +103,22 @@
             <th>
                 @Html.DisplayNameFor(model => model.Email)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Service)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Site)
-            </th>
-            <th></th>
+            <th>Action</th>
+            @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administration"))
+            {
+                <th>Administration</th>
+            }
         </tr>
     </thead>
     <tbody>
 @foreach (var item in Model) {
         <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Site.Ville)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Service.Nom)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Nom)
             </td>
@@ -88,17 +135,67 @@
                 @Html.DisplayFor(modelItem => item.Email)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Service.Nom)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Site.Ville)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+                    <a class="btn btn-info" asp-action="Details" asp-route-id="@item.Id">Détails</a>
+            </td>    
+                @if (SignInManager.IsSignedIn(User) && User.IsInRole("Administration"))
+                {
+                    <td>
+                        <div class="btn-group" role="group">
+                            <a class="btn btn-warning" asp-action="Edit" asp-route-id="@item.Id">Modifier</a>
+                            <a class="btn btn-danger" asp-action="Delete" asp-route-id="@item.Id">Supprimer</a>
+                        </div>
+                    </td>
+
+                }
         </tr>
 }
     </tbody>
 </table>
+
+<div class="d-flex justify-content-center">
+@if (ViewBag.TotalCount > ViewBag.PageSize)
+{
+    <div class="row justify-content-center">
+        <div class="col-sm-12">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    @{
+                        int totalPages = (int)Math.Ceiling((double)ViewBag.TotalCount / ViewBag.PageSize);
+                        int startPage = Math.Max(ViewBag.CurrentPage - 2, 1);
+                        int endPage = Math.Min(ViewBag.CurrentPage + 2, totalPages);
+                    }
+                    @if (ViewBag.CurrentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = 1, pageSize = ViewBag.PageSize, search = ViewBag.Search, siteSearch = ViewBag.SiteSearch, serviceSearch = ViewBag.ServiceSearch })">Début</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage - 1, pageSize = ViewBag.PageSize, search = ViewBag.Search, siteSearch = ViewBag.SiteSearch, serviceSearch = ViewBag.ServiceSearch })">Précédent</a>
+                        </li>
+                    }
+                    @for (int i = startPage; i <= endPage; i++)
+                    {
+                        if (i == ViewBag.CurrentPage)
+                        {
+                            <li class="page-item active"><a class="page-link" href="#">@i</a></li>
+                        }
+                        else
+                        {
+                            <li class="page-item"><a class="page-link" href="@Url.Action("Index", new { page = i, pageSize = ViewBag.PageSize, search = ViewBag.Search, siteSearch = ViewBag.SiteSearch, serviceSearch = ViewBag.ServiceSearch })">@i</a></li>
+                        }
+                    }
+                    @if (ViewBag.CurrentPage < totalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = ViewBag.CurrentPage + 1, pageSize = ViewBag.PageSize, search = ViewBag.Search, siteSearch = ViewBag.SiteSearch, serviceSearch = ViewBag.ServiceSearch })">Suivant</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="@Url.Action("Index", new { page = totalPages, pageSize = ViewBag.PageSize, search = ViewBag.Search, siteSearch = ViewBag.SiteSearch, serviceSearch = ViewBag.ServiceSearch })">Fin</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    </div>
+}
+</div>

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +12,7 @@ using WebApplicationAnnuaire.Models;
 
 namespace WebApplicationAnnuaire.Controllers
 {
+    [Authorize(Roles = "Administration")]
     public class SitesController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -137,23 +140,49 @@ namespace WebApplicationAnnuaire.Controllers
         }
 
         // POST: Sites/Delete/5
+        /* [HttpPost, ActionName("Delete")]
+         [ValidateAntiForgeryToken]
+         public async Task<IActionResult> DeleteConfirmed(int? id)
+         {
+             if (_context.Site == null)
+             {
+                 return Problem("Entity set 'ApplicationDbContext.Site'  is null.");
+             }
+             var site = await _context.Site.FindAsync(id);
+             if (site != null)
+             {
+                 _context.Site.Remove(site);
+             }
+
+             await _context.SaveChangesAsync();
+             return RedirectToAction(nameof(Index));
+         }*/
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
         {
-            if (_context.Site == null)
+            try
             {
-                return Problem("Entity set 'ApplicationDbContext.Site'  is null.");
+                if (_context.Site == null)
+                {
+                    return Problem("Entity set 'ApplicationDbContext.Site'  is null.");
+                }
+                var site = await _context.Site.FindAsync(id);
+                if (site != null)
+                {
+                    _context.Site.Remove(site);
+                }
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
             }
-            var site = await _context.Site.FindAsync(id);
-            if (site != null)
+            catch (Exception ex)
             {
-                _context.Site.Remove(site);
+                // Log the exception if necessary
+                return StatusCode(500);
             }
-            
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
+
 
         private bool SiteExists(int? id)
         {

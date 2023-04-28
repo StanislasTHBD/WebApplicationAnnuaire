@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Drawing.Printing;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -20,7 +23,8 @@ namespace WebApplicationAnnuaire.Controllers
         }
 
         // GET: Employes
-        public IActionResult Index(string search, int? siteSearch, int? serviceSearch)
+        public IActionResult Index(string search, int? siteSearch, int? serviceSearch, int page = 1, int pageSize = 10)
+        /*public IActionResult Index(string search, int? siteSearch, int? serviceSearch, int page = 1, int pageSize = 10)*/
         {
             var query = _context.Employes.Include(e => e.Service).Include(e => e.Site).AsQueryable();
 
@@ -40,10 +44,33 @@ namespace WebApplicationAnnuaire.Controllers
                 query = query.Where(e => e.ServiceId == serviceSearch.Value);
             }
 
-            var employes = query.ToList();
+            /*    var employes = query.ToList();
+                ViewBag.Sites = _context.Site.ToList();
+                ViewBag.Services = _context.Service.ToList();
+                return View(employes);*/
+
+            var totalCount = query.Count();
+            var employes = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            ViewBag.Search = search;
+            ViewBag.SiteSearch = siteSearch;
+            ViewBag.ServiceSearch = serviceSearch;
+            ViewBag.PageSize = pageSize;
+            ViewBag.TotalCount = totalCount;
+            ViewBag.CurrentPage = page;
+
             ViewBag.Sites = _context.Site.ToList();
             ViewBag.Services = _context.Service.ToList();
+
             return View(employes);
+
+            /*    var totalCount = query.Count();
+                var employes = query.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                ViewBag.Sites = _context.Site.ToList();
+                ViewBag.Services = _context.Service.ToList();
+                ViewBag.TotalCount = totalCount;
+                ViewBag.CurrentPage = page;
+                ViewBag.PageSize = pageSize;
+                return View(employes);*/
         }
 
 
@@ -68,6 +95,7 @@ namespace WebApplicationAnnuaire.Controllers
         }
 
         // GET: Employes/Create
+        [Authorize(Roles = "Administration")]
         public IActionResult Create()
         {
             ViewData["ServiceId"] = new SelectList(_context.Service, "Id", "Nom");
@@ -78,6 +106,7 @@ namespace WebApplicationAnnuaire.Controllers
         // POST: Employes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Administration")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nom,Prenom,TelephoneFixe,TelephonePortable,Email,ServiceId,SiteId")] Employe employe)
@@ -94,6 +123,7 @@ namespace WebApplicationAnnuaire.Controllers
         }
 
         // GET: Employes/Edit/5
+        [Authorize(Roles = "Administration")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Employes == null)
@@ -114,6 +144,7 @@ namespace WebApplicationAnnuaire.Controllers
         // POST: Employes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = "Administration")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int? id, [Bind("Id,Nom,Prenom,TelephoneFixe,TelephonePortable,Email,ServiceId,SiteId")] Employe employe)
@@ -149,6 +180,7 @@ namespace WebApplicationAnnuaire.Controllers
         }
 
         // GET: Employes/Delete/5
+        [Authorize(Roles = "Administration")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.Employes == null)
@@ -169,6 +201,7 @@ namespace WebApplicationAnnuaire.Controllers
         }
 
         // POST: Employes/Delete/5
+        [Authorize(Roles = "Administration")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int? id)
